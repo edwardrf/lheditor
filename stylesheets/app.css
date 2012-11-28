@@ -1,0 +1,58 @@
+/* Artfully masterminded by ZURB  */
+
+/* -------------------------------------------------- 
+   Table of Contents
+-----------------------------------------------------
+:: Shared Styles
+:: Page Name 1
+:: Page Name 2
+*/
+
+
+/* -----------------------------------------
+   Shared Styles
+----------------------------------------- */
+.lamp-table {
+	background-color: #555555;
+}
+
+.lamp-table.large{
+	width: 400px;
+	height: 400px;
+}
+
+.lamp-table.small{
+	width: 120px;
+	height: 120px;
+}
+
+/* Remove the effect of */
+.lamp-table tr:nth-child(even){
+	background-color: #555555;
+}
+
+.lamp-table td {
+	width: 12.5%;
+	height: 12.5%;
+	-webkit-border-radius: 1000px;
+	-moz-border-radius: 1000px;
+	-ms-border-radius: 1000px;
+	-o-border-radius: 1000px;
+	border-radius: 1000px;
+	background-color: #EEC739;
+	opacity: 0.3;
+}
+
+
+/* -----------------------------------------
+   Page Name 1
+----------------------------------------- */
+
+
+
+
+/* -----------------------------------------
+   Page Name 2
+----------------------------------------- */
+
+
