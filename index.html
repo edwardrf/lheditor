@@ -38,9 +38,16 @@
   </div>
 
   <div class="row">
-    <div class="eight columns">
+    <div class="one columns">
+      <table class="palette">
+        <tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr>
+        <tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr>
+        <tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr>
+        <tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr><tr><td><div></div></td></tr>
+      </table>
+    </div>
+    <div class="seven columns">
       <h3>The Grid</h3>
-
       <!-- Grid Example -->
       <div class="row">
         <div id="stage" class="twelve columns">
@@ -49,8 +56,36 @@
     </div>
 
     <div class="four columns">
-      <h4>Getting Started</h4>
-      <p>We're stoked you want to try Foundation! To get going, this file (index.html) includes some basic styles you can modify, play around with, or totally destroy to get going.</p>
+      <h4>Shortcuts</h4>
+      <div class="row">
+        <div>
+          <input type="text" class="name"/>
+        </div>
+        <div>
+          <a href="javascript:void(0)" class="small nice radius button allOff">Turn off all</a>
+          <a href="javascript:void(0)" class="small nice radius button allOn">Turn On all</a>
+          <a href="javascript:void(0)" class="small nice radius button allTo">All to current</a>
+        </div>
+        <br/>
+        <div>
+          <a href="javascript:void(0)" class="small nice radius button allPlus">All brighter (+1)</a>
+          <a href="javascript:void(0)" class="small nice radius button allMinus">All dimmer (-1)</a>
+        </div>
+        <br/>
+        <div>
+          <a href="javascript:void(0)" class="small nice radius button allPlusExceptZero">All brighter except 0</a>
+          <a href="javascript:void(0)" class="small nice radius button allMinusExcept15">All dimmer except 15</a>
+        </div>
+        <hr/>
+        <div>
+          <a href="javascript:void(0)" class="medium nice radius button addFrameBefore">+Frame before</a>
+          <a href="javascript:void(0)" class="medium nice radius button addFrameAfter">+Frame after</a>
+        </div>
+        <hr/>
+        <div>
+          <a href="javascript:void(0)" class="medium nice radius button play">PLAY</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -59,10 +94,16 @@
       <div class="timeline"></div>
     </div>
   </div>
+
+  <div id="playFrame" class="reveal-modal large">
+    <div class="row">
+    </div>
+  </div>
   
   <!-- Included JS Files (Compressed) -->
   <script src="javascripts/jquery.js"></script>
   <script src="javascripts/foundation.min.js"></script>
+  <script src="javascripts/jquery.mousewheel.min.js"></script>
   
   <!-- Initialize JS Plugins -->
   <script src="javascripts/app.js"></script>
@@ -84,7 +125,7 @@
   </script>
 
   <script type="text/template" id="time-gap">
-    <div class="time-gap"><input type="text" value="100"/>0<sub>ms</sub></div>
+    <div class="time-gap"><input type="number" value="100"/>0<sub>ms</sub></div>
   </script>
 
 </body>

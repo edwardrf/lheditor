@@ -12,13 +12,19 @@
 /* -----------------------------------------
    Shared Styles
 ----------------------------------------- */
+html {
+	overflow: hidden; /*Prevent mouse wheel from moving the page*/
+}
+
 .lamp-table {
 	background-color: #555555;
+	cursor: pointer;
 }
 
 .lamp-table.large{
 	width: 400px;
 	height: 400px;
+	margin: 0 auto;
 }
 
 .lamp-table.small{
@@ -26,7 +32,7 @@
 	height: 120px;
 }
 
-/* Remove the effect of */
+/* Remove the effect of fundation*/
 .lamp-table tr:nth-child(even){
 	background-color: #555555;
 }
@@ -43,6 +49,39 @@
 	padding: 0;
 }
 
+.palette {
+	height: 400px;
+	width: 28px;
+	margin-top: 58px;
+	background-color: #555555;
+}
+
+/* Remove the effect of fundation*/
+.palette tr:nth-child(even){
+	background-color: #555555;
+}
+
+.palette td{
+	width: 20px;
+	height: 20px;
+	padding: 0;
+}
+.palette td div{
+	-webkit-border-radius: 1000px;
+	-moz-border-radius: 1000px;
+	-ms-border-radius: 1000px;
+	-o-border-radius: 1000px;
+	border-radius: 1000px;
+	background-color: #EEC739;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+}
+
+.palette td.selected {
+	outline: 5px solid #2222CC;
+}
+
 .timeline-container {
 	height: 140px;
 	overflow-y:hidden;
@@ -57,10 +96,15 @@
 .timeline .keyframe{
 	width: 210px;
 	float: left;
+	border: 2px solid white;
 }
 
 .timeline .keyframe .lamp-table{
 	float: left;
+}
+
+.timeline .keyframe.selected{
+	border: 2px dashed #7777FF;
 }
 
 .timeline .time-gap{
@@ -75,6 +119,11 @@
 	padding-right: 0px;
 
 }
+
+#playFrame {
+	background-color: #555555;
+}
+
 /* -----------------------------------------
    Page Name 1
 ----------------------------------------- */
