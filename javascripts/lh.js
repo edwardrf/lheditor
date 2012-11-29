@@ -48,9 +48,10 @@ $(function(){
 		keyFrameDOMs = [];
 		for(var i = 0; i < keyFrames.length; i++){
 			var smallTable = $(template).addClass("small");
-			var div = $("<div class=\"keyframe\" n=\"" + i + "\">").append(smallTable).append($(timeGap).val(keyFrameTimings[i]));
+			var div = $("<div class=\"keyframe\" n=\"" + i + "\">").append(smallTable).append($(timeGap));
 			keyFrameDOMs.push(div);
 			timeline.append(div);
+			div.find("input").val(keyFrameTimings[i]);
 			render(div, keyFrames[i]);
 
 			// Function bind to key frame selection
@@ -67,10 +68,26 @@ $(function(){
 				$this = $(this);
 				var n = parseInt($this.parents("div.keyframe").attr("n"));
 				keyFrameTimings[n] = parseInt($this.val());
-				console.log($this, n, keyFrameTimings[n], keyFrameTimings);
 			}
 
 			div.find("input").keydown(updateTiming).change(updateTiming);
+			div.find("a.removeFrame").click(function(){
+				if(keyFrames.length == 1) return;
+				$this = $(this);
+				var theDiv = $this.parents("div.keyframe");
+				var n = parseInt(theDiv.attr("n"));
+				keyFrames.splice(n, 1);
+				keyFrameTimings.splice(n, 1);
+				keyFrameDOMs.splice(n, 1);
+				if(theDiv.hasClass("selected")){
+					if(n == keyFrames.length){
+						keyFrameDOMs[keyFrames.length - 1].click();
+					}else {
+						keyFrameDOMs[n].click();
+					}
+				}
+				theDiv.remove();
+			});
 		}
 		var n = stage.attr("n");
 		if(n != undefined){
@@ -149,7 +166,6 @@ $(function(){
 		var n = stage.attr("n");
 		for(var i = 1; i < 9; i ++){
 			for(var j = 1; j < 9; j ++){
-				console.log(keyFrames[n][i - 1][j - 1], except);
 				if(keyFrames[n][i - 1][j - 1] != except){
 					var gray = keyFrames[n][i - 1][j - 1] + delta;
 					if(gray > 15) gray = 15;
@@ -170,12 +186,12 @@ $(function(){
 		$(".allMinusExcept15").click(function(){paintAllPlusExcept(-1, 15);});
 		$(".addFrameBefore").click(function(){
 			var n = parseInt(stage.attr("n"));
-			pushKeyFrame(cloneFrame(keyFrames[n], 100, n));
+			pushKeyFrame(cloneFrame(keyFrames[n]), 20, n);
 			keyFrameDOMs[n + 1].click();
 		});
 		$(".addFrameAfter").click(function(){
 			var n = parseInt(stage.attr("n"));
-			pushKeyFrame(cloneFrame(keyFrames[n], 100, n + 1));
+			pushKeyFrame(cloneFrame(keyFrames[n]), 20, n + 1);
 		});
 	}
 
@@ -183,6 +199,12 @@ $(function(){
 		playFrame.find("div.row").append($(template).addClass("large centered"));
 		$(".play").click(function(){
 			playFrame.reveal({opened:play, close:stop});
+		});
+	}
+
+	function prepareExportSource(){
+		$(".export").click(function(){
+			console.log(exportAsSourceCode());
 		});
 	}
 
@@ -198,43 +220,73 @@ $(function(){
 	function play(){
 		playStage = playFrame.find(".lamp-table");
 		var frameCounter = 0;
-		console.log(keyFrameTimings);
 		playTask = setInterval(function(){
-			var pt = 0, f = 0, dt;
+			var pt = 0, f = 0, dt, done = false;
 			for(var i = 0; i < keyFrames.length; i++){
-				f += parseInt(keyFrameTimings[i]);
-				if(f >= frameCounter){
+				var t = parseInt(keyFrameTimings[i]);
+				f += t;
+				if(f >= frameCounter && !done){
 					pt = i;
-					dt = frameCounter - f + keyFrameTimings[i];
+					dt = frameCounter - f + t;
+					done = true;
 				}
 			}
-
+			
 			var sf = keyFrames[pt];
 			var ef = keyFrames[(pt + 1 == keyFrames.length ? 0 : pt + 1)];
 			for(var i = 0; i < 8; i++){
 				for(var j = 0; j < 8; j++){
-					var gray = Math.floor(dt * (ef[i][j] 
-						- sf[i][j]) / 
-						keyFrameTimings[pt] 
-						+ sf[i][j]);
+					var gray = Math.floor(dt * (ef[i][j] - sf[i][j]) / keyFrameTimings[pt] + sf[i][j]);
 					var opacity = 1.0 / 15 * gray;
 					playStage.find("tr[r=" + (i + 1) + "] td[c=" + (j + 1) + "]").css({"opacity" : opacity});
 				}
 			}
 			frameCounter++;
 			if(frameCounter > f) frameCounter = 0;
-		}, 10);
+		}, 1);
 	}
 
 	function stop(){
 		clearInterval(playTask);
 	}
 
+	function exportAsSourceCode(){
+		var buf = "#include <inttypes.h>\n\nint key_frame_count = " + keyFrames.length + ";\n\n"
+		var fbuf = "{\n";
+		var tbuf = "int key_frame_timing[] = {"
+		for(var n = 0; n < keyFrames.length; n++){
+			fbuf += "\t{\n";
+			tbuf += keyFrameTimings[n] + ", ";
+			for(var i = 0; i < 8; i++){
+				fbuf += "\t\t";
+				for(var j = 0; j < 8; j++){
+					val = keyFrames[n][i][j];
+					if(val < 10) val = " " + val;
+					fbuf +=  val + ",";
+				}
+				if(i == 7) fbuf = fbuf.slice(0, -1);
+				fbuf += "\n";
+			}
+			fbuf += "\t},\n";
+			if (n == keyFrameTimings.length - 1) {
+				fbuf = fbuf.slice(0, -2) + "\n";
+				tbuf = tbuf.slice(0, -2) + "}\n\n";
+			};
+		}
+		fbuf += "}\n";
+		return buf + tbuf + fbuf;
+	}
+
 	prepareStage();
 	preparePalette();
 	prepareShortcuts();
 	preparePlayFrame();
-	pushKeyFrame(cloneFrame(FULL_FRAME), 50);
+	prepareExportSource();
+	pushKeyFrame(cloneFrame(FULL_FRAME), 20);
 	keyFrameDOMs[0].click();
+
+	window.onbeforeunload = function(){
+		return "Please make sure you have saved the animation before leaving.";
+	}
 
 });
