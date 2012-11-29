@@ -20,7 +20,9 @@ $(function(){
 	var timeline = $(".timeline");
 	var palette = $("table.palette");
 	var playFrame = $("#playFrame");
+	var exportFrame = $("#exportFrame");
 	var playTask = null;
+	var playDOM = [];
 		// Create the stage
 	$("#stage").append($(template).addClass("large"));
 	var stage = $("#stage table");
@@ -113,7 +115,13 @@ $(function(){
 		palette.find("td div").each(function(){
 			var opacity = 1.0 / 15 * i;
 			$(this).css({"opacity": opacity}).parent("td").attr({gray: i--});
+		}).click(function(){
+			$this = $(this);
+			currentGray = parseInt($this.parent('td').attr("gray"));
+			palette.find("td").removeClass("selected");
+			palette.find("td[gray=" + currentGray + "]").addClass("selected");
 		});
+		
 		palette.find("td[gray=" + currentGray + "]").addClass("selected");
 		$("body").mousewheel(function(event, delta){
 			currentGray += delta;
@@ -186,17 +194,24 @@ $(function(){
 		$(".allMinusExcept15").click(function(){paintAllPlusExcept(-1, 15);});
 		$(".addFrameBefore").click(function(){
 			var n = parseInt(stage.attr("n"));
-			pushKeyFrame(cloneFrame(keyFrames[n]), 20, n);
+			pushKeyFrame(cloneFrame(keyFrames[n]), 50, n);
 			keyFrameDOMs[n + 1].click();
 		});
 		$(".addFrameAfter").click(function(){
 			var n = parseInt(stage.attr("n"));
-			pushKeyFrame(cloneFrame(keyFrames[n]), 20, n + 1);
+			pushKeyFrame(cloneFrame(keyFrames[n]), 50, n + 1);
 		});
 	}
 
 	function preparePlayFrame(){
 		playFrame.find("div.row").append($(template).addClass("large centered"));
+
+		for(var i = 0; i < 8; i ++){
+			playDOM.push([]);
+			for(var j = 0; j < 8; j ++){
+				playDOM[i].push(playFrame.find("tr[r=" + (i + 1) + "] td[c=" + (j + 1) + "]"));
+			}
+		}
 		$(".play").click(function(){
 			playFrame.reveal({opened:play, close:stop});
 		});
@@ -204,7 +219,8 @@ $(function(){
 
 	function prepareExportSource(){
 		$(".export").click(function(){
-			console.log(exportAsSourceCode());
+			exportFrame.find("pre").empty().html(exportAsSourceCode());
+			exportFrame.reveal();
 		});
 	}
 
@@ -238,12 +254,12 @@ $(function(){
 				for(var j = 0; j < 8; j++){
 					var gray = Math.floor(dt * (ef[i][j] - sf[i][j]) / keyFrameTimings[pt] + sf[i][j]);
 					var opacity = 1.0 / 15 * gray;
-					playStage.find("tr[r=" + (i + 1) + "] td[c=" + (j + 1) + "]").css({"opacity" : opacity});
+					playDOM[i][j].css({"opacity" : opacity});
 				}
 			}
 			frameCounter++;
 			if(frameCounter > f) frameCounter = 0;
-		}, 1);
+		}, 10);
 	}
 
 	function stop(){
@@ -251,7 +267,7 @@ $(function(){
 	}
 
 	function exportAsSourceCode(){
-		var buf = "#include <inttypes.h>\n\nint key_frame_count = " + keyFrames.length + ";\n\n"
+		var buf = "#include &lt;inttypes.h&gt;\n\nint key_frame_count = " + keyFrames.length + ";\n\n"
 		var fbuf = "{\n";
 		var tbuf = "int key_frame_timing[] = {"
 		for(var n = 0; n < keyFrames.length; n++){
@@ -282,7 +298,7 @@ $(function(){
 	prepareShortcuts();
 	preparePlayFrame();
 	prepareExportSource();
-	pushKeyFrame(cloneFrame(FULL_FRAME), 20);
+	pushKeyFrame(cloneFrame(FULL_FRAME), 50);
 	keyFrameDOMs[0].click();
 
 	window.onbeforeunload = function(){
